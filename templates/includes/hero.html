@@ -1,0 +1,855 @@
+<section class="hero-section">
+    <div class="hero-background">
+        <div class="particles-container" id="particles"></div>
+        <div class="gradient-overlay"></div>
+    </div>
+    
+    <div class="container">
+        <div class="hero-content-wrapper">
+            <!-- Left Content -->
+            <div class="hero-left" data-aos="fade-right" data-aos-duration="1000">
+                <div class="hero-badge">
+                    <span class="badge-text">Welcome to My Portfolio</span>
+                    <div class="badge-icon">
+                        <i class="fas fa-sparkles"></i>
+                    </div>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="title-line">Hi, I'm </span>
+                    <span class="title-name">{{ profile.user.get_full_name|default:"John Doe" }}</span>
+                </h1>
+                
+                <div class="hero-typing">
+                    <span class="typed-text">I'm a </span>
+                    <span class="typing" id="typingText"></span>
+                    <span class="cursor">|</span>
+                </div>
+                
+                <p class="hero-description">
+                    {{ profile.bio|default:"Passionate developer creating amazing web experiences with modern technologies and innovative solutions." }}
+                </p>
+                
+                <div class="hero-buttons">
+                    <a href="#projects" class="btn-hero btn-primary" data-aos="zoom-in" data-aos-delay="200">
+                        <span class="btn-text">View Projects</span>
+                        <span class="btn-icon">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                    
+                    <a href="#contact" class="btn-hero btn-secondary" data-aos="zoom-in" data-aos-delay="300">
+                        <span class="btn-text">Contact Me</span>
+                        <span class="btn-icon">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                    </a>
+                    
+                    <a href="{{ profile.github|default:'#' }}" target="_blank" class="btn-hero btn-ghost" data-aos="zoom-in" data-aos-delay="400">
+                        <span class="btn-icon">
+                            <i class="fab fa-github"></i>
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="hero-stats" data-aos="fade-up" data-aos-delay="500">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="{{ projects.count|default:50 }}">0</div>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="{{ experience.count|default:5 }}">0</div>
+                        <div class="stat-label">Years</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="{{ skills.count|default:20 }}">0</div>
+                        <div class="stat-label">Skills</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="{{ clients.count|default:30 }}">0</div>
+                        <div class="stat-label">Clients</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Content (Profile Image) -->
+            <div class="hero-right" data-aos="fade-left" data-aos-duration="1000">
+                <div class="profile-image-container">
+                    <div class="image-wrapper">
+                        {% if profile.profile_image %}
+                            <img src="{{ profile.profile_image.url }}" alt="{{ profile.user.get_full_name }}" class="profile-image">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}" alt="Profile" class="profile-image">
+                        {% endif %}
+                        
+                        <!-- Animated Border -->
+                        <div class="image-border"></div>
+                        
+                        <!-- Floating Elements -->
+                        <div class="floating-element element-1">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <div class="floating-element element-2">
+                            <i class="fab fa-js"></i>
+                        </div>
+                        <div class="floating-element element-3">
+                            <i class="fab fa-react"></i>
+                        </div>
+                        <div class="floating-element element-4">
+                            <i class="fab fa-django"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge -->
+                    <div class="experience-badge">
+                        <div class="badge-content">
+                            <span class="badge-years" data-count="{{ experience.count|default:5 }}">0</span>
+                            <span class="badge-text">Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator" data-aos="fade-up" data-aos-delay="800">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <span class="scroll-text">Scroll Down</span>
+            <div class="arrow">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 100px 0 50px;
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .particles-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .gradient-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, 
+            rgba(99, 102, 241, 0.1) 0%,
+            rgba(139, 92, 246, 0.05) 50%,
+            transparent 100%);
+    }
+
+    .hero-content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(99, 102, 241, 0.1);
+        padding: 10px 20px;
+        border-radius: 30px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        animation: badgePulse 2s infinite;
+    }
+
+    .badge-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .badge-icon {
+        animation: spin 3s linear infinite;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        line-height: 1.2;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--dark), var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .title-name {
+        display: inline-block;
+        position: relative;
+    }
+
+    .title-name::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), transparent);
+        animation: underlineExpand 1.5s ease forwards;
+    }
+
+    .hero-typing {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+        min-height: 40px;
+    }
+
+    .typed-text {
+        color: var(--dark);
+        font-weight: 600;
+    }
+
+    .typing {
+        color: var(--primary);
+        font-weight: 700;
+        position: relative;
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 3px;
+        background: var(--primary);
+        margin-left: 2px;
+        animation: blink 1s infinite;
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #666;
+        margin-bottom: 40px;
+        max-width: 500px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 50px;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-hero::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-hero:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--dark);
+        border: 2px solid var(--primary);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(99, 102, 241, 0.1);
+        transform: translateY(-5px);
+    }
+
+    .btn-ghost {
+        width: 50px;
+        height: 50px;
+        padding: 0;
+        justify-content: center;
+        background: white;
+        color: var(--dark);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-ghost:hover {
+        background: var(--primary);
+        color: white;
+        transform: rotate(15deg);
+    }
+
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        max-width: 500px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 5px;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    /* Profile Image Styles */
+    .profile-image-container {
+        position: relative;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .image-wrapper {
+        position: relative;
+        width: 100%;
+        padding-top: 100%; /* Square aspect ratio */
+    }
+
+    .profile-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        animation: morphing 15s infinite;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        z-index: 2;
+    }
+
+    .image-border {
+        position: absolute;
+        top: -20px;
+        left: -20px;
+        right: -20px;
+        bottom: -20px;
+        border: 3px solid transparent;
+        border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary)) border-box;
+        -webkit-mask: 
+            linear-gradient(#fff 0 0) padding-box, 
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        animation: borderRotate 10s linear infinite;
+        z-index: 1;
+    }
+
+    .floating-element {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--primary);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        z-index: 3;
+    }
+
+    .element-1 {
+        top: 10%;
+        left: 10%;
+        animation: float1 8s ease-in-out infinite;
+    }
+
+    .element-2 {
+        top: 10%;
+        right: 10%;
+        animation: float2 10s ease-in-out infinite;
+    }
+
+    .element-3 {
+        bottom: 10%;
+        left: 10%;
+        animation: float3 12s ease-in-out infinite;
+    }
+
+    .element-4 {
+        bottom: 10%;
+        right: 10%;
+        animation: float4 9s ease-in-out infinite;
+    }
+
+    .experience-badge {
+        position: absolute;
+        bottom: 20px;
+        right: -20px;
+        background: white;
+        padding: 15px 25px;
+        border-radius: 50px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        z-index: 4;
+        animation: badgeFloat 5s ease-in-out infinite;
+    }
+
+    .badge-content {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+    }
+
+    .badge-years {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .badge-text {
+        font-size: 0.9rem;
+        color: #666;
+        white-space: nowrap;
+    }
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .mouse {
+        width: 30px;
+        height: 50px;
+        border: 2px solid var(--dark);
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        padding-top: 10px;
+    }
+
+    .wheel {
+        width: 4px;
+        height: 10px;
+        background: var(--dark);
+        border-radius: 2px;
+        animation: scrollWheel 2s infinite;
+    }
+
+    .scroll-text {
+        font-size: 0.9rem;
+        color: var(--dark);
+        font-weight: 500;
+        animation: fadeInOut 2s infinite;
+    }
+
+    .arrow {
+        animation: bounce 2s infinite;
+    }
+
+    /* Animations */
+    @keyframes morphing {
+        0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+        25% { border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%; }
+        50% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
+        75% { border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%; }
+        100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+    }
+
+    @keyframes borderRotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float1 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(20px, -20px) rotate(180deg); }
+    }
+
+    @keyframes float2 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-20px, 20px) rotate(-180deg); }
+    }
+
+    @keyframes float3 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(15px, 15px) rotate(90deg); }
+    }
+
+    @keyframes float4 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-15px, -15px) rotate(-90deg); }
+    }
+
+    @keyframes badgeFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    @keyframes badgePulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+        50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    @keyframes scrollWheel {
+        0% { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(20px); opacity: 0; }
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(10px); }
+    }
+
+    @keyframes fadeInOut {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+    }
+
+    @keyframes underlineExpand {
+        from { width: 0; }
+        to { width: 100%; }
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Dark Mode */
+    .dark-mode .hero-title {
+        background: linear-gradient(135deg, white, var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .dark-mode .hero-description {
+        color: #d1d5db;
+    }
+
+    .dark-mode .stat-label {
+        color: #9ca3af;
+    }
+
+    .dark-mode .btn-secondary {
+        color: white;
+        border-color: white;
+    }
+
+    .dark-mode .btn-ghost {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .dark-mode .mouse {
+        border-color: white;
+    }
+
+    .dark-mode .wheel {
+        background: white;
+    }
+
+    .dark-mode .scroll-text {
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .hero-content-wrapper {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 40px;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+        }
+
+        .hero-description {
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            justify-content: center;
+        }
+
+        .hero-stats {
+            margin: 0 auto;
+        }
+
+        .profile-image-container {
+            max-width: 400px;
+        }
+
+        .experience-badge {
+            right: 0;
+            left: 0;
+            margin: 0 auto;
+            max-width: 200px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+
+        .hero-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn-hero {
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Typing animation
+        const typingText = document.getElementById('typingText');
+        const cursor = document.querySelector('.cursor');
+        const texts = [
+            'Full Stack Developer',
+            'Django Expert',
+            'Web Designer',
+            'Problem Solver',
+            'Tech Enthusiast'
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isPaused = false;
+        
+        function type() {
+            if (isPaused) return;
+            
+            const currentText = texts[textIndex];
+            
+            if (isDeleting) {
+                typingText.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingText.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            if (!isDeleting && charIndex === currentText.length) {
+                isPaused = true;
+                setTimeout(() => {
+                    isPaused = false;
+                    isDeleting = true;
+                    setTimeout(type, 500);
+                }, 2000);
+                return;
+            }
+            
+            if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % texts.length;
+            }
+            
+            const speed = isDeleting ? 50 : 100;
+            setTimeout(type, speed);
+        }
+        
+        // Start typing animation
+        setTimeout(type, 1000);
+        
+        // Animate counting stats
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-count'));
+            const duration = 2000;
+            const step = target / (duration / 16); // 60fps
+            
+            let current = 0;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                stat.textContent = Math.floor(current);
+            }, 16);
+        });
+        
+        // Animate experience badge years
+        const badgeYears = document.querySelector('.badge-years');
+        if (badgeYears) {
+            const target = parseInt(badgeYears.getAttribute('data-count'));
+            let current = 0;
+            const duration = 1500;
+            const step = target / (duration / 16);
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                badgeYears.textContent = Math.floor(current);
+            }, 16);
+        }
+        
+        // Scroll indicator click
+        const scrollIndicator = document.querySelector('.scroll-indicator');
+        if (scrollIndicator) {
+            scrollIndicator.addEventListener('click', () => {
+                const skillsSection = document.querySelector('#skills');
+                if (skillsSection) {
+                    skillsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+        
+        // Create particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random properties
+                const size = Math.random() * 10 + 5;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                const opacity = Math.random() * 0.5 + 0.1;
+                
+                // Apply styles
+                particle.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: var(--primary);
+                    border-radius: 50%;
+                    left: ${posX}%;
+                    top: ${posY}%;
+                    opacity: ${opacity};
+                    animation: particleFloat ${duration}s linear infinite ${delay}s;
+                `;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Add particle animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes particleFloat {
+                0% {
+                    transform: translateY(0) rotate(0deg);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        createParticles();
+        
+        // Add hover effect to buttons
+        const buttons = document.querySelectorAll('.btn-hero');
+        buttons.forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                gsap.to(this, {
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                gsap.to(this, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        });
+    });
+</script>

@@ -1,0 +1,988 @@
+{% extends 'portfolio/base.html' %}
+{% load static %}
+
+{% block title %}Projects - {{ block.super }}{% endblock %}
+
+{% block content %}
+<!-- Projects Header -->
+<section class="projects-header">
+    <div class="container">
+        <div class="header-content" data-aos="fade-up">
+            <h1 class="page-title">My <span class="highlight">Projects</span></h1>
+            <p class="page-subtitle">Explore my collection of work, from web applications to innovative solutions</p>
+            <div class="page-line"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Projects Filter -->
+<section class="projects-filter-section">
+    <div class="container">
+        <div class="filter-container" data-aos="fade-up">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="projectSearch" placeholder="Search projects...">
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="featured">Featured</button>
+                <button class="filter-btn" data-filter="web">Web Development</button>
+                <button class="filter-btn" data-filter="mobile">Mobile Apps</button>
+                <button class="filter-btn" data-filter="design">UI/UX Design</button>
+            </div>
+            
+            <div class="sort-options">
+                <select id="projectSort">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="name">Name A-Z</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Projects Grid -->
+<section class="projects-grid-section">
+    <div class="container">
+        {% if projects %}
+        <div class="projects-grid" id="projectsContainer">
+            {% for project in projects %}
+            <div class="project-item" 
+                 data-category="{% if project.featured %}featured {% endif %}web"
+                 data-date="{{ project.created_at|date:'Y-m-d' }}"
+                 data-name="{{ project.title|lower }}"
+                 data-aos="zoom-in"
+                 data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="project-card">
+                    <div class="project-image">
+                        {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                        {% else %}
+                        <img src="{% static 'images/project-placeholder.jpg' %}" alt="{{ project.title }}">
+                        {% endif %}
+                        
+                        {% if project.featured %}
+                        <div class="featured-badge">
+                            <i class="fas fa-star"></i>
+                            <span>Featured</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="project-overlay">
+                            <div class="overlay-content">
+                                <h3>{{ project.title }}</h3>
+                                <div class="tech-stack">
+                                    {% for tech in project.technologies.split %}
+                                    <span class="tech-tag">{{ tech }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="project-links">
+                                    {% if project.github_link %}
+                                    <a href="{{ project.github_link }}" class="project-link" target="_blank">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if project.live_link %}
+                                    <a href="{{ project.live_link }}" class="project-link" target="_blank">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'project_detail' project.pk %}" class="project-link">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-content">
+                        <div class="project-header">
+                            <h3 class="project-title">{{ project.title }}</h3>
+                            <span class="project-date">{{ project.created_at|date:"M Y" }}</span>
+                        </div>
+                        
+                        <p class="project-description">{{ project.description|truncatewords:30 }}</p>
+                        
+                        <div class="project-footer">
+                            <div class="project-tech">
+                                {% for tech in project.technologies.split|slice:":3" %}
+                                <span class="tech-pill">{{ tech }}</span>
+                                {% endfor %}
+                                {% if project.technologies.split|length > 3 %}
+                                <span class="tech-more">+{{ project.technologies.split|length|add:"-3" }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <a href="{% url 'project_detail' project.pk %}" class="view-project-btn">
+                                View Details <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-content">
+                <i class="fas fa-search"></i>
+                <h3>No Projects Found</h3>
+                <p>Try adjusting your search or filter to find what you're looking for.</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="no-projects">
+            <div class="no-projects-content">
+                <i class="fas fa-folder-open"></i>
+                <h3>No Projects Yet</h3>
+                <p>Projects will be displayed here once they are added.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Projects Stats -->
+<section class="projects-stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ projects.count|default:50 }}">0</h3>
+                    <p class="stat-label">Total Projects</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ featured_count|default:10 }}">0</h3>
+                    <p class="stat-label">Featured Projects</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ clients_count|default:25 }}">0</h3>
+                    <p class="stat-label">Happy Clients</p>
+                </div>
+            </div>
+            
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ experience_years|default:5 }}">0</h3>
+                    <p class="stat-label">Years Experience</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content" data-aos="zoom-in">
+            <h2>Have a Project in Mind?</h2>
+            <p>Let's work together to bring your ideas to life</p>
+            <a href="#contact" class="btn-cta">
+                Start a Project <i class="fas fa-rocket"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .projects-header {
+        padding: 100px 0 50px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, var(--dark), var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto 20px;
+    }
+
+    .page-line {
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        margin: 0 auto;
+        border-radius: 2px;
+    }
+
+    .projects-filter-section {
+        padding: 50px 0;
+        background: white;
+    }
+
+    .filter-container {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 30px;
+        align-items: center;
+        background: #f8fafc;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary);
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 15px 20px 15px 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 10px 20px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        font-weight: 600;
+        color: var(--dark);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-2px);
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .sort-options select {
+        padding: 12px 30px 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--dark);
+        background: white;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236366f1' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        transition: all 0.3s ease;
+    }
+
+    .sort-options select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .projects-grid-section {
+        padding: 50px 0 100px;
+        background: #f8fafc;
+    }
+
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .project-item {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.3s ease;
+    }
+
+    .project-item.hidden {
+        opacity: 0;
+        transform: translateY(20px);
+        display: none;
+    }
+
+    .project-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .project-image {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+    }
+
+    .project-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .project-card:hover .project-image img {
+        transform: scale(1.1);
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        z-index: 2;
+    }
+
+    .project-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+    }
+
+    .project-card:hover .project-overlay {
+        opacity: 1;
+    }
+
+    .overlay-content {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .overlay-content h3 {
+        color: white;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+    }
+
+    .tech-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .tech-tag {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+
+    .project-links {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .project-link {
+        width: 50px;
+        height: 50px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+    }
+
+    .project-link:hover {
+        background: var(--secondary);
+        transform: scale(1.1) rotate(10deg);
+    }
+
+    .project-content {
+        padding: 25px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .project-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+        flex: 1;
+    }
+
+    .project-date {
+        font-size: 0.9rem;
+        color: #666;
+        background: #f8fafc;
+        padding: 5px 10px;
+        border-radius: 15px;
+    }
+
+    .project-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        flex: 1;
+    }
+
+    .project-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .project-tech {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .tech-pill {
+        background: #f0f0f0;
+        color: var(--dark);
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .tech-more {
+        background: var(--primary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .view-project-btn {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .view-project-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .view-project-btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .view-project-btn:hover i {
+        transform: translateX(5px);
+    }
+
+    .no-results,
+    .no-projects {
+        text-align: center;
+        padding: 80px 0;
+    }
+
+    .no-results-content,
+    .no-projects-content {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .no-results-content i,
+    .no-projects-content i {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 20px;
+    }
+
+    .no-results-content h3,
+    .no-projects-content h3 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        color: var(--dark);
+    }
+
+    .no-results-content p,
+    .no-projects-content p {
+        color: #666;
+    }
+
+    .projects-stats-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, var(--dark) 0%, #111827 100%);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-10px);
+    }
+
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .stat-content h3 {
+        font-size: 2.5rem;
+        color: white;
+        margin-bottom: 5px;
+        line-height: 1;
+    }
+
+    .stat-content p {
+        color: #d1d5db;
+        margin: 0;
+    }
+
+    .cta-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        text-align: center;
+    }
+
+    .cta-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .cta-content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, var(--dark), var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .cta-content p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .btn-cta:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 20px 50px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-cta i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-cta:hover i {
+        transform: translateX(5px);
+    }
+
+    /* Dark Mode */
+    .dark-mode .projects-header {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .dark-mode .project-card {
+        background: #2d3748;
+    }
+
+    .dark-mode .project-title {
+        color: white;
+    }
+
+    .dark-mode .project-description {
+        color: #d1d5db;
+    }
+
+    .dark-mode .project-date {
+        background: #4a5568;
+        color: #d1d5db;
+    }
+
+    .dark-mode .tech-pill {
+        background: #4a5568;
+        color: #d1d5db;
+    }
+
+    .dark-mode .projects-grid-section {
+        background: #1a1a2e;
+    }
+
+    .dark-mode .projects-filter-section {
+        background: #1a1a2e;
+    }
+
+    .dark-mode .filter-container {
+        background: #2d3748;
+    }
+
+    .dark-mode .search-box input {
+        background: #4a5568;
+        border-color: #4a5568;
+        color: white;
+    }
+
+    .dark-mode .filter-btn {
+        background: #4a5568;
+        border-color: #4a5568;
+        color: white;
+    }
+
+    .dark-mode .filter-btn.active {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .dark-mode .sort-options select {
+        background: #4a5568;
+        border-color: #4a5568;
+        color: white;
+    }
+
+    .dark-mode .no-results-content h3,
+    .dark-mode .no-projects-content h3 {
+        color: white;
+    }
+
+    .dark-mode .no-results-content p,
+    .dark-mode .no-projects-content p {
+        color: #d1d5db;
+    }
+
+    .dark-mode .cta-section {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .filter-container {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .filter-buttons {
+            justify-content: center;
+        }
+
+        .sort-options {
+            text-align: center;
+        }
+
+        .projects-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .projects-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-card {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Projects filtering
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const projectItems = document.querySelectorAll('.project-item');
+        const searchInput = document.getElementById('projectSearch');
+        const sortSelect = document.getElementById('projectSort');
+        const noResults = document.getElementById('noResults');
+        
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentSort = 'newest';
+        
+        function filterProjects() {
+            let visibleCount = 0;
+            
+            projectItems.forEach(item => {
+                const category = item.getAttribute('data-category');
+                const name = item.getAttribute('data-name');
+                const date = item.getAttribute('data-date');
+                
+                // Check filter
+                const filterMatch = currentFilter === 'all' || category.includes(currentFilter);
+                
+                // Check search
+                const searchMatch = currentSearch === '' || name.includes(currentSearch.toLowerCase());
+                
+                if (filterMatch && searchMatch) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+            
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                
+                // Sort projects
+                sortProjects();
+            }
+        }
+        
+        function sortProjects() {
+            const container = document.getElementById('projectsContainer');
+            const items = Array.from(container.querySelectorAll('.project-item:not(.hidden)'));
+            
+            items.sort((a, b) => {
+                const nameA = a.getAttribute('data-name');
+                const nameB = b.getAttribute('data-name');
+                const dateA = new Date(a.getAttribute('data-date'));
+                const dateB = new Date(b.getAttribute('data-date'));
+                
+                switch (currentSort) {
+                    case 'newest':
+                        return dateB - dateA;
+                    case 'oldest':
+                        return dateA - dateB;
+                    case 'name':
+                        return nameA.localeCompare(nameB);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Reorder items in DOM
+            items.forEach(item => {
+                container.appendChild(item);
+                
+                // Add animation
+                gsap.fromTo(item, 
+                    { opacity: 0, y: 20 },
+                    { opacity: 1, y: 0, duration: 0.5 }
+                );
+            });
+        }
+        
+        // Filter button click
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.getAttribute('data-filter');
+                filterProjects();
+            });
+        });
+        
+        // Search input
+        searchInput.addEventListener('input', function() {
+            currentSearch = this.value.toLowerCase();
+            filterProjects();
+            
+            // Add search animation
+            if (this.value) {
+                gsap.to(this, {
+                    scale: 1.02,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            } else {
+                gsap.to(this, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+        
+        // Sort select
+        sortSelect.addEventListener('change', function() {
+            currentSort = this.value;
+            filterProjects();
+        });
+        
+        // Animate project cards on hover
+        projectItems.forEach(item => {
+            const card = item.querySelector('.project-card');
+            
+            item.addEventListener('mouseenter', function() {
+                gsap.to(card, {
+                    scale: 1.02,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                gsap.to(card, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        });
+        
+        // Animate stats
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-count'));
+            let current = 0;
+            const duration = 2000;
+            const step = target / (duration / 16);
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                stat.textContent = Math.floor(current);
+            }, 16);
+        });
+        
+        // Add hover effect to CTA button
+        const ctaBtn = document.querySelector('.btn-cta');
+        if (ctaBtn) {
+            ctaBtn.addEventListener('mouseenter', function() {
+                gsap.to(this, {
+                    rotation: 5,
+                    duration: 0.3,
+                    yoyo: true,
+                    repeat: 1
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

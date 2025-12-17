@@ -1,0 +1,195 @@
+{% extends 'portfolio/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero animate__animated animate__fadeIn">
+    <div class="container">
+        <div class="hero-content" data-aos="fade-up">
+            <h1 class="hero-title">Hi, I'm <span class="highlight">{{ profile.user.get_full_name }}</span></h1>
+            <h2 class="hero-subtitle">{{ profile.title }}</h2>
+            <p class="hero-description">{{ profile.bio }}</p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-secondary">Contact Me</a>
+            </div>
+        </div>
+        <div class="hero-image" data-aos="fade-left">
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" alt="{{ profile.user.get_full_name }}">
+            {% else %}
+                <img src="{% static 'images/default-avatar.png' %}" alt="Default Avatar">
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Skills Section -->
+<section id="skills" class="section skills-section">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">My Skills</h2>
+        <div class="skills-grid">
+            {% for skill in skills %}
+            <div class="skill-card" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="skill-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>{{ skill.name }}</h3>
+                <div class="skill-bar">
+                    <div class="skill-progress" data-width="{{ skill.percentage }}" style="background-color: {{ skill.color }}; width: 0;"></div>
+                </div>
+                <span class="skill-percentage">{{ skill.percentage }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Projects Section -->
+<section id="projects" class="section projects-section">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Featured Projects</h2>
+        <div class="projects-grid">
+            {% for project in featured_projects %}
+            <div class="project-card" data-aos="flip-left" data-aos-delay="{{ forloop.counter0|add:200 }}">
+                {% if project.image %}
+                <div class="project-image">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                </div>
+                {% endif %}
+                <div class="project-content">
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description|truncatewords:30 }}</p>
+                    <div class="project-tech">
+                        {% for tech in project.technologies.split %}
+                        <span class="tech-tag">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="project-links">
+                        <a href="{{ project.github_link }}" class="project-link"><i class="fab fa-github"></i> Code</a>
+                        <a href="{% url 'project_detail' project.pk %}" class="project-link">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Experience Timeline -->
+<section id="experience" class="section experience-section">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Experience</h2>
+        <div class="timeline">
+            {% for exp in experiences %}
+            <div class="timeline-item" data-aos="fade-right" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="timeline-date">{{ exp.start_date|date:"M Y" }} - {% if exp.current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}</div>
+                <div class="timeline-content">
+                    <h3>{{ exp.position }}</h3>
+                    <h4>{{ exp.company }}</h4>
+                    <p>{{ exp.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="section contact-section">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Get In Touch</h2>
+        <div class="contact-container">
+            <div class="contact-info" data-aos="fade-right">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h4>Email</h4>
+                        <p>{{ profile.email }}</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>{{ profile.phone }}</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h4>Location</h4>
+                        <p>{{ profile.location }}</p>
+                    </div>
+                </div>
+                <div class="social-links">
+                    {% if profile.github %}
+                    <a href="{{ profile.github }}" class="social-link"><i class="fab fa-github"></i></a>
+                    {% endif %}
+                    {% if profile.linkedin %}
+                    <a href="{{ profile.linkedin }}" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    {% endif %}
+                    {% if profile.twitter %}
+                    <a href="{{ profile.twitter }}" class="social-link"><i class="fab fa-twitter"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="contact-form" data-aos="fade-left">
+                <form id="contactForm" method="POST" action="{% url 'contact' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate skill bars
+    const skillBars = document.querySelectorAll('.skill-progress');
+    skillBars.forEach(bar => {
+        const width = bar.getAttribute('data-width');
+        gsap.to(bar, {
+            width: width + '%',
+            duration: 1.5,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: bar.parentElement,
+                start: "top 80%",
+            }
+        });
+    });
+    
+    // Animate project cards on hover
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -10,
+                duration: 0.3,
+                boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
+            });
+        });
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0,
+                duration: 0.3,
+                boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
